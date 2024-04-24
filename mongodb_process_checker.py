@@ -1,10 +1,4 @@
-#!/usr/bin/python
-# Version - 0.2
-# Purpose - MongoDB Process Checker
-# Author  - Vinoth Kanna RS / Mydbops IT Solutions
-# Website - www.mydbops.com   Email - mysqlsupport@mydbops.com
-
-import pymongo, argparse, getpass, urllib, commands, sys, time, re
+import pymongo, argparse, getpass, urllib.request, urllib.parse, urllib.error, subprocess, sys, time, re
 from prettytable import PrettyTable
 from bson.json_util import dumps
 
@@ -36,7 +30,7 @@ if args.mongo_user != 'NoAuth':
         args.mongo_password=getpass.getpass('\nEnter the password : ')
 
 os_mongodb_password = args.mongo_password
-args.mongo_password = urllib.quote_plus(args.mongo_password)
+args.mongo_password = urllib.parse.quote_plus(args.mongo_password)
 
 
 def read_time(ms):
@@ -82,7 +76,7 @@ def op_stat():
         qry = co_q - po_q
         com = co_c - po_c
         gem = co_g - po_g
-        print ('Op-Counter : Ins: %d, Upd: %d, Del: %d, Qry: %d, Com: %d, GetM: %d\n' % (ins, upd, dtd, qry, com, gem))
+        print(('Op-Counter : Ins: %d, Upd: %d, Del: %d, Qry: %d, Com: %d, GetM: %d\n' % (ins, upd, dtd, qry, com, gem)))
 
     po_i = co_i
     po_u = co_u
@@ -107,7 +101,7 @@ def doc_stat():
         upd = cd_u - pd_u
         dtd = cd_d - pd_d
         ret = cd_r - pd_r
-        print ('Doc-Stats  : Ins: %d, Upd: %d, Del: %d, Ret: %d' % (ins, upd, dtd, ret))
+        print(('Doc-Stats  : Ins: %d, Upd: %d, Del: %d, Ret: %d' % (ins, upd, dtd, ret)))
 
     pd_i = cd_i
     pd_u = cd_u
@@ -149,7 +143,7 @@ def conn_stat():
     if i != 0:
         nw_i = (cnw_i - pnw_i) / 1024.00 / 1024.00
         nw_o = (cnw_o - pnw_o) / 1024.00 / 1024.00
-        print ('[Net - In: ' + '{:.2f}'.format(nw_i) + ' MB / Out: ' + '{:.2f}'.format(nw_o) + ' MB]' + cstat.rjust(w3))
+        print(('[Net - In: ' + '{:.2f}'.format(nw_i) + ' MB / Out: ' + '{:.2f}'.format(nw_o) + ' MB]' + cstat.rjust(w3)))
     pnw_i = cnw_i
     pnw_o = cnw_o
 
@@ -168,7 +162,7 @@ def repl_stat():
         if sep.find('behind') != -1:
             hosts = hosts + ', Lag: ' + sep.split()[0] + ' s)  '
     hosts = hosts.strip() + ']'
-    print (r_stat + ''.rjust(7) + hosts + '\n')
+    print((r_stat + ''.rjust(7) + hosts + '\n'))
 
 
 def get_proc():
@@ -213,8 +207,8 @@ def get_proc():
                         admin.command('killOp', op=opid)
 
     print ('\033c')
-    print ('Timestamp : ' + time.strftime('%Y-%m-%d %H:%M:%S') + '[Refresh Int : '.rjust(w1) + str(args.refresh_rate) + ' Sec]' + inf + '\n')
-    print ('Connected To : ' + re.sub(args.mongo_password, r'****', uri) + hd.rjust(w2) + '\n')
+    print(('Timestamp : ' + time.strftime('%Y-%m-%d %H:%M:%S') + '[Refresh Int : '.rjust(w1) + str(args.refresh_rate) + ' Sec]' + inf + '\n'))
+    print(('Connected To : ' + re.sub(args.mongo_password, r'****', uri) + hd.rjust(w2) + '\n'))
 
     if args.repl is True:
         repl_stat()
@@ -225,7 +219,7 @@ def get_proc():
         conn_stat()
 
     if track > 1:
-        print (out.get_string(sortby='Op-ID'))
+        print((out.get_string(sortby='Op-ID')))
     else:
         print ('\n[No Queries To Display]\n')
 
@@ -234,10 +228,10 @@ def get_proc():
 
 def get_out(flag, cmd):
     if flag == 'm':
-        out = commands.getoutput("%s --eval '%s' --quiet" % (os_uri, cmd))
+        out = subprocess.getoutput("%s --eval '%s' --quiet" % (os_uri, cmd))
         return out
     if flag == 'l':
-        out = commands.getoutput(cmd)
+        out = subprocess.getoutput(cmd)
         return out
 
 
@@ -285,7 +279,7 @@ if args.kill > 0:
 
 rstat = admin.command('isMaster')
 
-for i in xrange(sys.maxint):
+for i in range(sys.maxsize):
 
     try:
 
@@ -294,9 +288,9 @@ for i in xrange(sys.maxint):
         rs_stat()
         get_proc()
 
-    except pymongo.errors.PyMongoError, e:
-        print ('\nConnecting To : ' + uri + '\n')
-        print (time.strftime('%Y-%m-%d %H:%M:%S') + ' : MongoDB Exception - %s\n' % e)
+    except pymongo.errors.PyMongoError as e:
+        print(('\nConnecting To : ' + uri + '\n'))
+        print((time.strftime('%Y-%m-%d %H:%M:%S') + ' : MongoDB Exception - %s\n' % e))
         sys.exit(1)
 
     except KeyboardInterrupt:
