@@ -6,4 +6,5 @@ https://www.mydbops.com/blog/mongodb-process-list-in-mysql-way/
 shell> ./mongodb_process_checker --help
 shell> ./mongodb_process_checker -H 192.168.176.204 -P 37017 -u admin -p 123456 -a admin -r -v
 ```
-![image](https://github.com/hcymysql/mongodb_process_checker/assets/19261879/8bdb4a0f-5c6c-424b-8a8c-a05f8bed2741)
+![mongo_process](https://github.com/user-attachments/assets/2cc3eafe-30da-401b-b5e2-4c3825ed5be7)
+
