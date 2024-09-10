@@ -130,7 +130,7 @@ def rs_stat():
         hd = '[' + status + ']'
     """
 
-    # 下面是修正副本集状态显示不正确的代码
+    # 修复MongoDB副本集状态显示不正确。
     rstat = admin.command('replSetGetStatus')
     rs_name = rstat.get('set', '')
     
